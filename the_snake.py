@@ -53,12 +53,12 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 screen.fill(BOARD_BACKGROUND_COLOR)
 
 # Заголовок окна
-pygame.display.set_caption('змейка!')
+pygame.display.set_caption('Вообще крутая змейка!')
 
 # Настройка времени
 clock = pygame.time.Clock()
 
-# Классы игры
+
 class GameObject:
     """Описывает стандартный объект игры."""
 
@@ -87,7 +87,10 @@ class Apple(GameObject):
 
     def __init__(self, occupied: set[tuple[int, int]], body_color=APPLE_COLOR):
         self.position = None
-        super().__init__(position=self.randomize_position(occupied=occupied), body_color=body_color)
+        super().__init__(
+            position=self.randomize_position(occupied=occupied),
+            body_color=body_color
+        )
 
     def randomize_position(self, occupied: set[tuple[int, int]]):
         """Задает яблоку случайную позицию на игровом поле, не пересекающуюся с объектами."""
@@ -128,7 +131,15 @@ class Stone(GameObject):
 class Snake(GameObject):
     """Описывает объект змейки."""
 
-    def __init__(self, length=1, positions=[(GRID_CENTER_X * GRID_SIZE, GRID_CENTER_Y * GRID_SIZE)], direction=RIGHT, next_direction=None, body_color=SNAKE_COLOR, speed=SPEED):
+    def __init__(
+            self,
+            length=1,
+            positions=[(GRID_CENTER_X * GRID_SIZE, GRID_CENTER_Y * GRID_SIZE)],
+            direction=RIGHT,
+            next_direction=None,
+            body_color=SNAKE_COLOR,
+            speed=SPEED
+    ):
         self.length = length
         self.positions = positions
         self.direction = direction
@@ -161,8 +172,10 @@ class Snake(GameObject):
     def move(self):
         """Движение змейки вперед в направлении direction."""
         old_head = self.get_head_position()
-        new_head_x = (old_head[0] + self.direction[0] * GRID_SIZE) % (GRID_WIDTH * GRID_SIZE)
-        new_head_y = (old_head[1] + self.direction[1] * GRID_SIZE) % (GRID_HEIGHT * GRID_SIZE)
+        new_head_x = (old_head[0] + self.direction[0] * GRID_SIZE) \
+                     % (GRID_WIDTH * GRID_SIZE)
+        new_head_y = (old_head[1] + self.direction[1] * GRID_SIZE) \
+                     % (GRID_HEIGHT * GRID_SIZE)
         self.position = (new_head_x, new_head_y)
         self.positions.insert(0, self.position)
         self.last = self.positions.pop()
@@ -193,56 +206,3 @@ class Snake(GameObject):
         self.position = self.positions[0]
         self.last = None
         screen.fill(BOARD_BACKGROUND_COLOR)
-
-
-# Обработка действий пользователя
-def handle_keys(game_object):
-    """Обработка действий пользователя."""
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            raise SystemExit
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                raise SystemExit
-            elif event.key == pygame.K_q:
-                game_object.speed += SPEED_DECREMENT
-            elif event.key == pygame.K_w and game_object.speed > SPEED_DECREMENT:
-                game_object.speed -= SPEED_DECREMENT
-            elif (event.key, game_object.direction) in NEXT_DIRECTION.keys():
-                game_object.next_direction = NEXT_DIRECTION[(event.key, game_object.direction)]
-
-
-# Главная функция
-def main():
-    """Основная функция игрового процесса."""
-    pygame.init()
-    snake = Snake()
-    occupied_cells = set(snake.positions)
-    apple = Apple(occupied_cells)
-    occupied_cells.add(apple.position)
-    bad_apple = BadApple(occupied_cells)
-    occupied_cells.add(bad_apple.position)
-    stone = Stone(occupied_cells)
-
-    while True:
-        clock.tick(snake.speed)
-        handle_keys(snake)
-        snake.update_direction()
-        snake.move()
-        snake.update_speed()
-
-        # Рисование объектов
-        screen.fill(BOARD_BACKGROUND_COLOR)
-
-        apple.draw()
-        bad_apple.draw()
-        stone.draw()
-        snake.draw()
-
-        pygame.display.update()
-
-
-if __name__ == "__main__":
-    main()
