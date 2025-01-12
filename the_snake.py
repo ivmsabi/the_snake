@@ -170,9 +170,10 @@ class Snake(GameObject):
             self.speed = 20
 
         def move(self):
-        """Движение змейки вперед в направлении direction."""
-        old_head = self.get_head_position()
-        new_head_x = (
+        if condition:
+            print("Движение змейки")  # Отступ добавлен
+            old_head = self.get_head_position()
+            new_head_x = (
             (old_head[0] + self.direction[0] * GRID_SIZE)
             % (GRID_WIDTH * GRID_SIZE)
         )
@@ -198,6 +199,7 @@ class Snake(GameObject):
                 self.last, (GRID_SIZE, GRID_SIZE)
             )
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
+
 
     def get_head_position(self):
         """Возвращает позицию головы змейки."""
