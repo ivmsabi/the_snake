@@ -169,13 +169,17 @@ class Snake(GameObject):
         else:
             self.speed = 20
 
-    def move(self):
+        def move(self):
         """Движение змейки вперед в направлении direction."""
         old_head = self.get_head_position()
-        new_head_x = (old_head[0] + self.direction[0] * GRID_SIZE) \
-                     % (GRID_WIDTH * GRID_SIZE)
-        new_head_y = (old_head[1] + self.direction[1] * GRID_SIZE) \
-                     % (GRID_HEIGHT * GRID_SIZE)
+        new_head_x = (
+            (old_head[0] + self.direction[0] * GRID_SIZE)
+            % (GRID_WIDTH * GRID_SIZE)
+        )
+        new_head_y = (
+            (old_head[1] + self.direction[1] * GRID_SIZE)
+            % (GRID_HEIGHT * GRID_SIZE)
+        )
         self.position = (new_head_x, new_head_y)
         self.positions.insert(0, self.position)
         self.last = self.positions.pop()
@@ -190,7 +194,9 @@ class Snake(GameObject):
 
         # Затирание последнего сегмента
         if self.last:
-            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
+            last_rect = pygame.Rect(
+                self.last, (GRID_SIZE, GRID_SIZE)
+            )
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
     def get_head_position(self):
